@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            Title of Document
+        </title>
+    </head>
+    <body>
+        <div>
+            Outer Doc
+        </div>
+        <p id="resp">
+            Failed
+        </p>
+        <script>
+            window.addEventListener("message", (event) => {
+                console.log(event);
+                document.getElementById("resp").innerHTML = event.data;
+            }, false);
+        </script>
+        <iframe src="file:///home/jd/Documents/dev/redact-client/innertest.html"/>
+    </body>
+</html>

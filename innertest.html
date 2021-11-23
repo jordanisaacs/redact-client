@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            Title of Document
+        </title>
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self'">
+    </head>
+    <body>
+        <p id="p1">Failed</p>
+        <script>
+            fetch("https://httpbin.org/get")
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("p1").innerHTML = JSON.stringify(data);
+                });
+
+            var parent = window.parent;
+
+            parent.postMessage("hello world", "*");
+            console.log(parent);
+
+        </script>
+    </body>
+</html>

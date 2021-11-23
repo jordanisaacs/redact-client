@@ -1,0 +1,81 @@
+<html>
+  <head id="head-root">
+    <script id="message-script">
+
+      // Generate ECDSA keypair
+      const kpPromise = crypto.subtle.generateKey(
+        {
+          name: "ECDSA",
+          namedCurve = "P-256",
+        },
+        true,
+        ["sign", "verify"]
+      )
+      // Secure path using handlebars
+      const unsecurePath = "{{ UnsecureAddr.path }}";
+      const scriptHTML = document.getElementByID("message-script").innerHtml;
+
+      // Send public key to parent first (if unsecure path)
+      kpPromise
+        .then((kp) => crypto.subtle.exportKey("raw", kp.publicKey))
+        .then((pk) => {
+          const msg = {
+            type: "PublicKey",
+            content: pk,
+          };
+          window.parent.postMessage(unsecurePath, msg);
+        })
+      
+      // Send signed message to parent (if unsecure path)
+      kpPromise
+        .then((kp) => {
+          const encoder = new TextEncoder();
+          const data = encoder.encode("hello world");
+          return crypto.subtle.sign(
+            {
+              name: "ECDSA",
+              hash: {name: "SHA-256"},
+            },
+            kp.privateKey,
+            data);
+        .then((signed_msg) => {
+          const msg = {
+            type: "SignedMessage",
+            content: signed_msg,
+          };
+          window.parent.postMessage(unsecurePath, msg);
+        });
+
+      // Add event listener for setting html
+      window.addEventListener("message", (event) => {
+        // Check event is well formed
+        if (typeof event !== 'object' ||
+            !event.hasOwnProperty('head') ||
+            !event.hasOwnProperty('body') ||
+            typeof event.head !== "string" ||
+            typeof event.body !== "string") {
+          return;
+        }
+
+        // Remove all elements except message-script in header
+        head_node = document.getElementByID("head-root");
+        while (head_node.lastChild.id !== 'message-script') {
+          head_node.removeChild(head_node.lastChild);
+        };
+        // Insert adjacent html with reparsing the script
+        // B/c do not want message-script to re-run on postmessage
+        message_script = document.getElementByID("message-script");
+        message_script.insertAdjacentHTML("afterend", event.head);
+
+        // Simply replace body html with postmessage
+        document.getElementByID("body-root").innerHTML = event.body;
+      }, window.parent)
+
+    </script>
+  </head>
+  <body id="body-root">
+    <h1>
+      Waiting for html message
+    </h1>
+  </body>
+</html>

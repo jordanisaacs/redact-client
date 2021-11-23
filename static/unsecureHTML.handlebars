@@ -1,0 +1,90 @@
+<html>
+  <head>
+    <script>
+      // https://developer.mozilla.org/en-US/docs/Web/API/Crypto/getRandomValues
+      const frame_path = "{{ UnsecureHTML.path }}";
+      const iframeWindow = document.getElementById("html-iframe").contentWindow;
+      const parentWindow = window.parent;
+      const secureToken = "{{ UnsecureHTML.token }}";
+
+      function setPublicKey(event) {
+        // Set the public key if not set
+        // If already send HTML to secure client with warning
+      }
+
+      function forwardSecureMsg(event) {
+        // Verify the message using public key (if public key not set console log error)
+        // If cannot verify message with set public key then send HTML to secure client with warning
+        // Otherwise forward message to parent
+      }
+
+      function sendWarningHTML(msg) {
+        // postMessage to secure iframe with warning message
+
+      }
+
+      function secureManager(event) {
+        // Check if 
+        // Verify signed message
+        // Don't forward if not signed (console log error)
+      }
+
+      function htmlForwarder(event) {
+        // Verify content is well formed (if not console log error)
+        // Switch format to string
+        // Regex replace the string with secure token
+        // Post message to secure iframe
+        iframeWindow.postMessage(event.data, frame_path);
+      }
+
+      function messageReciever(event) {
+        // If from parent then call htmlForwarder
+
+        // If from secure iframe call secureForwarder
+
+
+      }
+
+      genFrame();
+      window.addEventListener('message', messageReciever, false);
+
+    </script>
+  </head>
+  <body>
+
+  </body>
+</html>
+      function genFrame() {
+        crypto.getRandomValues(message_id);
+        var path = frame_path + "?messageID=" + secure_id.join("");
+
+        iframeWindow.location.href = path;
+      }
+
+      function secureForwarder(event) {
+        // Deserialize the object (invalid if not formed)
+        object = JSON.parse(event.data)
+
+        // Check the message is valid (uuID)
+        if (object.id !== secure_id) {
+            return;
+        }
+
+        // Forward the message
+        parentWindow.postMessage(object.msg, "*");
+      }
+
+      function htmlForwarder(event) {
+        // New message_id whenever iframe is updated
+        genFrame();
+        iframeWindow.postMessage(event.data, frame_path);
+      }
+
+      function messageReciever(event) {
+        // Recieve postMessage from parent
+        // call 
+
+      }
+
+      genFrame();
+      window.addEventListener('message', messageReciever, false);
